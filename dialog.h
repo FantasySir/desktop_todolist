@@ -62,6 +62,9 @@ private:
 
     void initSettings();
 
+    void setProcessAutoRunSelf(const QString &appPath, bool isChecked);
+    void isAutoRunChecked(bool isChecked);
+
 private slots:
     void on_checkBox_clicked(int);
 };

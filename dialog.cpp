@@ -11,6 +11,8 @@
 #include <QAction>
 #include <QSystemTrayIcon>
 #include <QScreen>
+#include <QFileInfo>
+#include <QDir>
 
 
 #include "dialog.h"
@@ -160,14 +162,18 @@ void Dialog::changeStyle() {
 
 void Dialog::createSystemTray(){
     // 初始化按钮
+    QAction *autoRunAction = new QAction(QString("开机启动"));
+    autoRunAction->setCheckable(true);
     QAction *quitAction = new QAction(QString("退出"));
 
+    connect(autoRunAction, SIGNAL(triggered(bool)), this, SLOT(isAutoRunChecked(bool)));
     connect(quitAction, &QAction::triggered, this, [=](){
         QApplication::exit(0);
     });
 
     // 初始化菜单并添加项
     QMenu *trayMenu = new QMenu(this); //菜单.
+    trayMenu->addAction(autoRunAction);
     trayMenu->addAction(quitAction);
 
     // 创建系统托盘
@@ -191,6 +197,31 @@ void Dialog::initSettings() {
     yPos = screen->size().height() * yDivition;
 
     this->move(xPos, yPos);
+}
+
+void Dialog::setProcessAutoRunSelf(const QString &appPath, bool isChecked) {
+    QSettings settings("HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run",QSettings::Registry64Format);
+
+    QFileInfo fInfo(appPath);
+    QString name = fInfo.baseName();
+    QString path = settings.value(name).toString();
+
+    // toNativeSeparators: 将 "/" 替换为 "\"
+    QString newPath = QDir::toNativeSeparators(appPath);
+    if(isChecked) {
+        if(path != newPath) {
+            settings.setValue(name, newPath);
+        }
+    }
+    else{
+        settings.remove(name);
+    }
+}
+
+void Dialog::isAutoRunChecked(bool isChecked){
+    if(isChecked)
+        !isChecked;
+    this->setProcessAutoRunSelf(qApp->applicationFilePath(), isChecked);
 }
 
 // 窗口嵌入桌面
