@@ -1,0 +1,21 @@
+QLabel{
+  font-size: 50px;
+  font-family: "KaiTi";
+}
+QCheckBox{
+  font-size: 39px;
+  font-family: "KaiTi";
+}
+QCheckBox:checked{
+  color:darkgray;
+}
+QCheckBox::indicator{
+  width: 39px;
+  height: 39px;
+}
+QCheckBox::indicator:unchecked{
+  image:url(.\\moquan.png);
+}
+QCheckBox::indicator:checked{
+  image:url(.\\mo_finished.png);
+}
